@@ -1,0 +1,32 @@
+.header.header_article { height: 450px; }
+
+.article_view { color: #ddd; }
+
+.article_view-container {
+	width: 70%;
+	margin: auto;
+	padding-top: 20px;
+}
+
+.article_view-title {
+	border-bottom: 2px solid #DABE0E;
+	line-height: 50px;
+}
+
+.article_view-subtitle {
+	font-weight: 400;
+	margin: 0;
+	padding: 0;
+	font-size: 15px;
+	font-style: italic;
+	opacity: 0.8;
+}
+
+.article_view-content {
+	padding-top: 30px;
+	text-align: justify;
+	font-weight: 300;
+	padding-bottom: 30px;
+	font-size: 18px;
+	line-height: 30px;
+}

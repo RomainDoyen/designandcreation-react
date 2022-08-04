@@ -1,24 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { AnimatePresence } from "framer-motion";
+import Home from './pages/Home';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import NotFound from './pages/NotFound';
+import Draw from './pages/Draw';
+import Logo from './pages/Logo';
+import UploadImg from './components/UploadImg';
+import UploadLogo from './components/UploadLogo';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <AnimatePresence>
+          <Routes>
+            <Route path="/" element={<Home></Home>}></Route>
+            <Route path="/home" element={<Home></Home>}></Route>
+            <Route path="/about" element={<About></About>}></Route>
+            <Route path="/contact" element={<Contact></Contact>}></Route>
+            <Route path="/draw" element={<Draw></Draw>}></Route>
+            <Route path="/logo" element={<Logo></Logo>}></Route>
+            <Route path='/uploaddraw' element={<UploadImg></UploadImg>}></Route>
+            <Route path='/uploadlogo' element={<UploadLogo></UploadLogo>}></Route>
+            <Route path="*" element={<NotFound></NotFound>}></Route>
+          </Routes>
+        </AnimatePresence>
+    </BrowserRouter>
   );
 }
 
