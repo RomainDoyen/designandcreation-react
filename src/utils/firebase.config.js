@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
+  apiKey: "AIzaSyASQBVeXxgc_roOv6UXvF7gMbVXzv0aFjw",
   authDomain: "designandcreation-react.firebaseapp.com",
   projectId: "designandcreation-react",
   storageBucket: "designandcreation-react.appspot.com",
