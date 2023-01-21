@@ -4,10 +4,12 @@ import { getDownloadURL, ref, listAll } from "firebase/storage";
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Swal from 'sweetalert2';
+import Spinner from "../components/Spinner";
 
 const Logo = () => {
 
     const [imageList, setImageList] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const imageListRef = ref(storage, "imagesLogo/");
 
@@ -16,6 +18,7 @@ const Logo = () => {
             res.items.forEach((item) => {
                 getDownloadURL(item).then((url) => {
                     setImageList((prev) => [...prev, url]);
+                    setLoading(false);
                 }).catch((err) => console.log("err", err));
             });
         });
@@ -35,15 +38,17 @@ const Logo = () => {
             <Header></Header>
             <div className="gallery-section">
                 <div className="inner-width">
-                    <div className="gallery">
-                        {imageList.map((url, index) => {
-                            return (
-                                <button key={index} className="image" onClick={showModal}>
-                                    <img src={url} key={index} alt="logo"></img>
-                                </button>  
-                            );
-                        })}
-                    </div>
+                    { loading ? <Spinner></Spinner> : 
+                        <div className="gallery">
+                            {imageList.map((url, index) => {
+                                return (
+                                    <button key={index} className="image" onClick={showModal}>
+                                        <img src={url} key={index} alt="logo"></img>
+                                    </button>  
+                                );
+                            })}
+                        </div>
+                    }
                 </div>
     	    </div>
             <Footer></Footer>
