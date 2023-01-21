@@ -22,7 +22,7 @@ function App() {
             <Route path="/logo" element={<Logo></Logo>}></Route>
             <Route path='/uploaddraw' element={<UploadImg></UploadImg>}></Route>
             <Route path='/uploadlogo' element={<UploadLogo></UploadLogo>}></Route>
-            <Route path="*" element={<NotFound></NotFound>}></Route>
+            <Route path="/*" element={<NotFound></NotFound>}></Route>
           </Routes>
         </AnimatePresence>
     </BrowserRouter>
