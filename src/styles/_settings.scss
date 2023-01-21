@@ -164,6 +164,31 @@ body {
 	color: #ccc;
 }
 
+.notFound-content {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	margin-bottom: 15px;
+}
+
+.notFound-content img {
+	width: 30%;
+}
+
+.notFound-content a {
+	text-decoration: none;
+	color: #118BBF;
+	font-size:larger;
+	border-radius: 10px;
+	padding: 5px;
+	transition: 1s all;
+}
+
+.notFound-content a:hover {
+	background-color: #2c3e50;
+}
+
 #link_cv { text-decoration: none; }
 
 @media screen and (max-width: 1150px) {

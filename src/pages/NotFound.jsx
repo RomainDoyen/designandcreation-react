@@ -9,7 +9,7 @@ const NotFound = () => {
             <Header></Header>
             <div className="notFound">
                 <div className="notFound-content">
-                    <h2>Erreur 404</h2>
+                    <img src='./assets/images/404-error.png' alt='Page non trouvée'></img>
                     <NavLink to="/">Retour à l'accueil <i className='fas fa-home'></i></NavLink>
                 </div>
             </div>
