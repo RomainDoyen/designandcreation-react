@@ -21,6 +21,10 @@ const Footer = () => {
 		});
 	}
 
+	const getCurrentYear = () => {
+		return new Date().getFullYear();
+	}
+
 	window.addEventListener('scroll', toggleVisible);
 
     return (
@@ -28,7 +32,7 @@ const Footer = () => {
             <div className="parent">
   				<div className="element_left">
   					<img src="./assets/images/profile1.png" className="header_navbar--logo-profile" width="45" alt='profile' /><h1 className="header_navbar--logo-title">Design And Creation</h1>
-  					<p>&copy; Design And Creation 2016-2022 | Tous droits réservés.</p>
+  					<p>&copy; Design And Creation 2016 - {getCurrentYear()} | Tous droits réservés.</p>
   				</div>
   				<div className="reseaux">
   					<span><i className="fa fa-share-alt"></i>&nbsp;Suivez-moi</span>
