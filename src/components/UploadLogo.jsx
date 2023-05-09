@@ -37,8 +37,13 @@ const UploadLogo = () => {
     return (
         <div>
             <Header></Header>
-            <input type="file" onChange={(e) => setImageUpload(e.target.files[0])}/>
-            <button onClick={uploadImage}>Upload image</button>
+            <div className="contain-upload">
+                <h2 className='articles_title'>Charger un logo</h2>
+                <div className="upload">
+                    <input className='choose-img__input' type="file" onChange={(e) => setImageUpload(e.target.files[0])}/>
+                    <button className='btn-upload-img__button' onClick={uploadImage}>Upload image</button>
+                </div>
+            </div>
             {/* {imageList.map((url, index) => {
                 return <img src={url} key={index} alt="logo"></img>
             })} */}

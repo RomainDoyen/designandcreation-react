@@ -9,8 +9,8 @@ const NotFound = () => {
             <Header></Header>
             <div className="notFound">
                 <div className="notFound-content">
-                    <img src='./assets/images/404-error.png' alt='Page non trouvée'></img>
                     <NavLink to="/">Retour à l'accueil <i className='fas fa-home'></i></NavLink>
+                    <img src='./assets/images/404-error.png' alt='Page non trouvée'></img>
                 </div>
             </div>
             <Footer></Footer>

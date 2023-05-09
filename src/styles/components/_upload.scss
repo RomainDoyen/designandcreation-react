@@ -1,0 +1,56 @@
+.contain-upload {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .upload {
+        padding: 15px;
+        margin-bottom: 25px;
+        border: 3px solid $bleu-1;
+        border-radius: 5px;
+    }
+
+    .btn-upload-img {
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        border: 1px solid $bleu-1;
+        border-radius: 5px;
+        background-color: $white-4;
+        box-shadow: 0 1rem 2rem rgba($black-3, .1);
+        text-align: center;
+
+        &__button {
+            display: inline-block;
+            background-color: $mauve-1;
+            color: $white-3;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 500;
+            padding: .7rem 2rem;
+            border-radius: 5px;
+            transition: all 1s;
+            cursor: pointer;
+
+            &:hover {
+                background-color: darken($mauve-2, 10%);
+            }
+        }
+    }
+
+    input.choose-img__input {
+        color: cadetblue;
+        background-color: #f9f9f9;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        transition: all 1s;
+        cursor: pointer;
+
+        &:hover {
+            background-color: cadetblue;
+            color: #333;
+        }
+    }
+}
