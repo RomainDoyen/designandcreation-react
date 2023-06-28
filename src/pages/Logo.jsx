@@ -3,57 +3,66 @@ import { storage } from "../utils/firebase.config";
 import { getDownloadURL, ref, listAll } from "firebase/storage";
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import Swal from 'sweetalert2';
 import Spinner from "../components/Spinner";
+import Modal from "../components/Modal";
 
 const Logo = () => {
-
     const [imageList, setImageList] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedImage, setSelectedImage] = useState("");
 
     const imageListRef = ref(storage, "imagesLogo/");
 
     useEffect(() => {
-        listAll(imageListRef).then((res) => {
-            res.items.forEach((item) => {
-                getDownloadURL(item).then((url) => {
-                    setImageList((prev) => [...prev, url]);
-                    setLoading(false);
-                }).catch((err) => console.log("err", err));
-            });
-        });
+        const fetchData = async () => {
+          const res = await listAll(imageListRef);
+          const urls = await Promise.all(res.items.map(item => getDownloadURL(item).catch(err => console.log("err", err))));
+          setImageList(prev => Array.from(new Set([...prev, ...urls])));
+          setLoading(false);
+        };
+      
+        fetchData();
     }, []);
 
-    const showModal = () => {
-        Swal.fire({
-            imageUrl: imageList,
-            imageWidth: 600,
-            imageHeight: 300,
-            imageAlt: 'Custom image',
-        });
-    }
+    const openModal = (imageUrl) => {
+        setSelectedImage(imageUrl);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+    };
 
     return (
         <div>
-            <Header></Header>
-            <div className="gallery-section">
-                <div className="inner-width">
-                    { loading ? <Spinner></Spinner> : 
-                        <div className="gallery">
-                            {imageList.map((url, index) => {
-                                return (
-                                    <button key={index} className="image" onClick={showModal}>
-                                        <img src={url} key={index} alt="logo"></img>
-                                    </button>  
-                                );
-                            })}
-                        </div>
-                    }
+        <Header></Header>
+        <div className="gallery-section">
+            <div className="inner-width">
+            {loading ? (
+                <Spinner />
+            ) : (
+                <div className="gallery">
+                {imageList.map((url, index) => (
+                    <button
+                    key={index}
+                    className="image"
+                    onClick={() => openModal(url)}
+                    >
+                    <img src={url} key={index} alt="logo"></img>
+                    </button>
+                ))}
                 </div>
-    	    </div>
-            <Footer></Footer>
+            )}
+            </div>
         </div>
+        {showModal && (
+            <Modal imageUrl={selectedImage} closeModal={closeModal} />
+        )}
+        <Footer></Footer>
+    </div>
     );
 };
 
 export default Logo;
+

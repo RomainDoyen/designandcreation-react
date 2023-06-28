@@ -16,7 +16,7 @@ const Contact = () => {
 							<i className="notif fas fa-bell"></i>
 							<div className="pic"><img src="./assets/images/DAC3.png" alt="logo" /></div>
 							<div className="name">Design And Creation</div>
-							<div className="tag">@designandcreation</div>
+							<div className="tag">@designandcreation_rd</div>
 						</div>
 						<div className="bottom-section">
 							<div className="social-media">
