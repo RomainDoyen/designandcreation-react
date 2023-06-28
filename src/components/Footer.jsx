@@ -25,13 +25,17 @@ const Footer = () => {
 		return new Date().getFullYear();
 	}
 
+	const handleContextMenu = (event) => {
+		event.preventDefault(); // Empêche l'affichage du menu contextuel
+	};
+
 	window.addEventListener('scroll', toggleVisible);
 
     return (
         <div className='footer'>
             <div className="parent">
   				<div className="element_left">
-  					<img src="./assets/images/profile1.png" className="header_navbar--logo-profile" width="45" alt='profile' /><h1 className="header_navbar--logo-title">Design And Creation</h1>
+  					<img src="./assets/images/profile1.png" className="header_navbar--logo-profile" width="45" alt='profile' onContextMenu={handleContextMenu} /><h1 className="header_navbar--logo-title">Design And Creation</h1>
   					<p>&copy; Design And Creation 2016 - {getCurrentYear()} | Tous droits réservés.</p>
   				</div>
   				<div className="reseaux">
@@ -48,7 +52,7 @@ const Footer = () => {
 			</div>
 			
 			<div className="btn_up" onClick={scrollToTop}>
-                <img id="btn_up" src="./assets/images/btn_up.png" style={{ display: visible ? 'inline' : 'none'}} alt="btn up" />
+                <img id="btn_up" src="./assets/images/btn_up.png" style={{ display: visible ? 'inline' : 'none'}} alt="btn up" onContextMenu={handleContextMenu} />
             </div>
         </div>
     );

@@ -23,7 +23,7 @@ const Draw = () => {
     };
   
     fetchData();
-  }, []);  
+  }, []); 
   
   const openModal = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -32,6 +32,10 @@ const Draw = () => {
 
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  const handleContextMenu = (event) => {
+    event.preventDefault(); // Empêche l'affichage du menu contextuel
   };
 
   return (
@@ -49,7 +53,7 @@ const Draw = () => {
                   className="image"
                   onClick={() => openModal(url)}
                 >
-                  <img src={url} key={index} alt="draw"></img>
+                  <img src={url} key={index} alt="draw" onContextMenu={handleContextMenu}></img>
                 </button>
               ))}
             </div>

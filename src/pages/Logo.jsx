@@ -34,6 +34,10 @@ const Logo = () => {
         setShowModal(false);
     };
 
+    const handleContextMenu = (event) => {
+        event.preventDefault(); // Empêche l'affichage du menu contextuel
+    };
+
     return (
         <div>
         <Header></Header>
@@ -49,7 +53,7 @@ const Logo = () => {
                     className="image"
                     onClick={() => openModal(url)}
                     >
-                    <img src={url} key={index} alt="logo"></img>
+                    <img src={url} key={index} alt="logo" onContextMenu={handleContextMenu}></img>
                     </button>
                 ))}
                 </div>

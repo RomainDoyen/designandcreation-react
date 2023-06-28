@@ -19,6 +19,10 @@ const Header = () => {
 		"Mon portfolio de logo"
 	];
 
+	const handleContextMenu = (event) => {
+		event.preventDefault(); // Empêche l'affichage du menu contextuel
+	};
+
     return (
         <div className='header header_article'>
 			{
@@ -36,7 +40,7 @@ const Header = () => {
 			<div className="container">
 				<div className={isActive ? "header_navbar is-open" : "header_navbar"} onClick={toggleClass}>
 					<div className="header_navbar--logo">
-						<img src="./assets/images/profile1.png" className="header_navbar--logo-profile" width="45" alt='logo'/><h1 className="header_navbar--logo-title">Design And Creation</h1>
+						<img src="./assets/images/profile1.png" className="header_navbar--logo-profile" width="45" alt='logo' onContextMenu={handleContextMenu}/><h1 className="header_navbar--logo-title">Design And Creation</h1>
 					</div>
                     <Navigation></Navigation>
 					<div className="header_navbar--toggle">

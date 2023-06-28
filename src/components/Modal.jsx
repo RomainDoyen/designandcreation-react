@@ -8,6 +8,10 @@ const Modal = ({ imageUrl, closeModal }) => {
     setIsLoaded(true);
   };
 
+  const handleContextMenu = (event) => {
+    event.preventDefault(); // Empêche l'affichage du menu contextuel
+  };
+
   return (
     <div className="modal">
       <div className="modal-overlay"></div>
@@ -18,6 +22,7 @@ const Modal = ({ imageUrl, closeModal }) => {
           alt="Modal"
           className={isLoaded ? "modal-image" : "modal-image hidden"}
           onLoad={handleImageLoad}
+          onContextMenu={handleContextMenu}
         />
       </div>
       <button className="modal-close" onClick={closeModal}>
