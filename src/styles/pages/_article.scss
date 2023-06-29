@@ -93,6 +93,12 @@
 	border-radius: 4px;
 }
 
+@media screen and (max-width: 690px) {
+	.profile-card {
+		width: 100%;
+	}
+}
+
 .top-section {
 	padding: 60px 40px;
 	background: #3b3d65bb;
