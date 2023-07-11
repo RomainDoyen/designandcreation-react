@@ -190,6 +190,27 @@ body {
 
 #link_cv { text-decoration: none; }
 
+/* Scrollbar */
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: none;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #DC822F;
+	border-radius: 15px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #b46c28;
+}
+
+/* Responsive */
+
 @media screen and (max-width: 1150px) {
 	.parent { max-width: 600px; }
 	.element_right, .element_left, .reseaux {
