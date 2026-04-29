@@ -11,7 +11,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: url("../../../public/assets/images/banniere.png") center no-repeat;
+  background: url("/assets/images/banniere.png") center no-repeat;
   background-size: cover;
   z-index: 1;
   opacity: 0.5;
@@ -23,7 +23,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: url("../../../public/assets/images/car1.png") center no-repeat;
+  background: url("/assets/images/car1.png") center no-repeat;
   background-size: cover;
   z-index: 1;
   opacity: 0.5;
@@ -35,7 +35,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: url("../../../public/assets/images/Isometric2.png") center no-repeat;
+  background: url("/assets/images/Isometric2.png") center no-repeat;
   background-size: cover;
   z-index: 1;
   opacity: 0.5;
@@ -47,7 +47,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: url("../../../public/assets/images/dune3.jpg") center
+  background: url("/assets/images/dune3.jpg") center
     no-repeat;
   background-size: cover;
   z-index: 1;
@@ -95,6 +95,10 @@
   color: #fff;
   list-style-type: none;
   text-decoration: none;
+}
+
+.header_navbar--menu-link.is-active {
+  color: #e9421e;
 }
 
 .header_navbar--menu > a:before {

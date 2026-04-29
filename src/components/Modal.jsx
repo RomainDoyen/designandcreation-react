@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+"use client";
 
-const Modal = ({ imageUrl, closeModal }) => {
+import { useState } from "react";
+
+export default function Modal({ imageUrl, closeModal }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const handleImageLoad = () => {
@@ -9,12 +10,12 @@ const Modal = ({ imageUrl, closeModal }) => {
   };
 
   const handleContextMenu = (event) => {
-    event.preventDefault(); // Empêche l'affichage du menu contextuel
+    event.preventDefault();
   };
 
   return (
     <div className="modal">
-      <div className="modal-overlay"></div>
+      <div className="modal-overlay" />
       <div className="modal-content">
         {isLoaded ? null : <div className="modal-loader">Loading...</div>}
         <img
@@ -25,16 +26,9 @@ const Modal = ({ imageUrl, closeModal }) => {
           onContextMenu={handleContextMenu}
         />
       </div>
-      <button className="modal-close" onClick={closeModal}>
-          <i className="fa-solid fa-xmark"></i>
-        </button>
+      <button type="button" className="modal-close" onClick={closeModal}>
+        <i className="fa-solid fa-xmark" />
+      </button>
     </div>
   );
-};
-
-Modal.propTypes = {
-  imageUrl: PropTypes.string.isRequired,
-  closeModal: PropTypes.func.isRequired,
-};
-
-export default Modal;
+}

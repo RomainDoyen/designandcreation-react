@@ -1,30 +1,35 @@
-import React, { useEffect, useState } from 'react';
+"use client";
+
 import axios from "axios";
+import { useEffect, useState } from "react";
 
-const Counter = () => {
+export default function Counter() {
+  const [value, setValue] = useState(null);
 
-    const [counter, setCounter] = useState([]);
+  useEffect(() => {
+    axios
+      .get("https://api.countapi.xyz/hit/designandcreation-compteur/visits")
+      .then((res) => {
+        const v = res.data?.value;
+        setValue(typeof v === "number" ? v : res.data);
+      })
+      .catch(() => {
+        setValue(null);
+      });
+  }, []);
 
-    const updateCounter = () => {
-        axios.get('https://api.countapi.xyz/hit/designandcreation-compteur/visits').then((res) => { 
-            setCounter(res.data);
-        }).catch((err) => {
-            console.log(err);
-        });
-    }
-
-    useEffect(() => {
-        updateCounter();
-    }, []);
-
-    return (
-        <div>
-            <p id="msg" style={{ color: "#fff" }}>Nombres de pages vues</p>
-	  		<span id="counter" counter={counter} key={counter.id}>{counter.data?.map((count) => (
-                <p style={{ color: "#fff" }}>{count?.value}</p>
-            ))}</span>
-        </div>
-    );
-};
-
-export default Counter;
+  return (
+    <div>
+      <p id="msg" style={{ color: "#fff" }}>
+        Nombres de pages vues
+      </p>
+      <span id="counter">
+        {value != null ? (
+          <p style={{ color: "#fff" }}>{String(value)}</p>
+        ) : (
+          <p style={{ color: "#888" }}>—</p>
+        )}
+      </span>
+    </div>
+  );
+}

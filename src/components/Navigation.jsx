@@ -1,20 +1,37 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+"use client";
 
-const Navigation = () => {
-    return (
-        <div className="header_navbar--menu">
-            <NavLink to="/" className="header_navbar--menu-link active">
-                <li><i className="fas fa-home"></i>&nbsp;Accueil</li>
-            </NavLink>
-            <NavLink to="/about" className="header_navbar--menu-link active">
-                <li><i className="fas fa-newspaper"></i>&nbsp;A propos</li>
-            </NavLink>
-            <NavLink to="/contact" className="header_navbar--menu-link active">
-                <li><i className="fas fa-phone"></i>&nbsp;Contact</li>
-            </NavLink>
-        </div>
-    );
-};
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export default Navigation;
+const links = [
+  { href: "/", label: "Accueil", icon: "fas fa-home" },
+  { href: "/about", label: "A propos", icon: "fas fa-newspaper" },
+  { href: "/contact", label: "Contact", icon: "fas fa-phone" },
+];
+
+export default function Navigation() {
+  const pathname = usePathname() || "";
+
+  return (
+    <div className="header_navbar--menu">
+      {links.map(({ href, label, icon }) => {
+        const active =
+          href === "/"
+            ? pathname === "/" || pathname === "/home"
+            : pathname === href;
+        return (
+          <Link
+            key={href}
+            href={href}
+            className={`header_navbar--menu-link${active ? " is-active" : ""}`}
+          >
+            <li>
+              <i className={icon} />
+              &nbsp;{label}
+            </li>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
