@@ -16,6 +16,8 @@ const ALLOWED_TYPES = new Set([
 ]);
 
 export const runtime = "nodejs";
+/** Limite Vercel / Next — augmente le plafond sur les offres Pro (Hobby reste souvent ~10 s). */
+export const maxDuration = 60;
 
 function isFileField(value) {
   return (

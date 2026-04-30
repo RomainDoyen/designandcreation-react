@@ -8,6 +8,9 @@ const labels = {
   logo: { title: "Logos", noun: "logo", icon: "fa-vector-square" },
 };
 
+/** Plusieurs requêtes courtes : une seule grosse requête dépasse souvent le délai Vercel (504). 2 fichiers/lot reste raisonnable sur le plan Hobby (~10 s). */
+const FILES_PER_REQUEST = 2;
+
 export default function AdminUploadForm({ kind }) {
   const meta = labels[kind] ?? {
     title: kind,
@@ -19,6 +22,7 @@ export default function AdminUploadForm({ kind }) {
   const [message, setMessage] = useState("");
   const [messageKind, setMessageKind] = useState("");
   const [busy, setBusy] = useState(false);
+  const [uploadBatch, setUploadBatch] = useState(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -40,40 +44,90 @@ export default function AdminUploadForm({ kind }) {
       return;
     }
     setBusy(true);
+    setUploadBatch(null);
     setMessage("");
     setMessageKind("");
+    const totalProjects = [];
+    const totalFailed = [];
+    const batches = Math.ceil(files.length / FILES_PER_REQUEST);
+
+    const failSlice = (slice, errorText) => {
+      for (const f of slice) {
+        totalFailed.push({ name: f.name, error: errorText });
+      }
+    };
+
     try {
-      const fd = new FormData();
-      fd.append("kind", kind);
-      for (const f of files) {
-        fd.append("file", f);
-      }
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: fd,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setMessageKind("err");
-        setMessage(data.error || "Échec de l’upload.");
-        if (Array.isArray(data.failed) && data.failed.length) {
-          setMessage(
-            (data.error || "Échec.") +
-              " " +
-              data.failed.map((f) => `${f.name}: ${f.error}`).join(" · "),
-          );
+      for (let b = 0; b < batches; b += 1) {
+        const slice = files.slice(
+          b * FILES_PER_REQUEST,
+          (b + 1) * FILES_PER_REQUEST,
+        );
+        setUploadBatch({ current: b + 1, total: batches });
+
+        const fd = new FormData();
+        fd.append("kind", kind);
+        for (const f of slice) {
+          fd.append("file", f);
         }
-        return;
+
+        let res;
+        try {
+          res = await fetch("/api/admin/upload", {
+            method: "POST",
+            body: fd,
+          });
+        } catch {
+          failSlice(slice, "Erreur réseau.");
+          continue;
+        }
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          if (res.status === 504 || res.status === 502) {
+            failSlice(
+              slice,
+              "Délai serveur dépassé — le lot est envoyé par petits groupes ; réessaie ce groupe.",
+            );
+          } else if (res.status === 413) {
+            failSlice(slice, "Requête trop volumineuse (fichiers trop lourds).");
+          } else if (Array.isArray(data.failed) && data.failed.length) {
+            totalFailed.push(...data.failed);
+          } else {
+            const msg =
+              data.error ||
+              (res.status === 401
+                ? "Session expirée — reconnecte-toi."
+                : `Erreur serveur (${res.status}).`);
+            failSlice(slice, msg);
+          }
+          continue;
+        }
+
+        totalProjects.push(...(data.projects ?? []));
+        totalFailed.push(...(data.failed ?? []));
       }
-      const n = data.projects?.length ?? 0;
-      const failed = data.failed ?? [];
-      if (failed.length === 0) {
+
+      const n = totalProjects.length;
+      const failed = totalFailed;
+
+      if (n === 0) {
+        setMessageKind("err");
+        setMessage(
+          failed.length
+            ? `Aucun fichier enregistré. ${failed.map((f) => `${f.name}: ${f.error}`).join(" · ")}`
+            : "Échec de l’upload.",
+        );
+      } else if (failed.length === 0) {
         setMessageKind("ok");
         setMessage(
           n <= 1
             ? "Image enregistrée — elle apparaît sur la page publique."
             : `${n} images enregistrées — elles apparaissent sur la page publique.`,
         );
+        setFiles([]);
+        if (inputRef.current) inputRef.current.value = "";
       } else {
         setMessageKind("ok");
         setMessage(
@@ -81,13 +135,14 @@ export default function AdminUploadForm({ kind }) {
             .map((f) => `${f.name} (${f.error})`)
             .join(" · ")}`,
         );
+        setFiles([]);
+        if (inputRef.current) inputRef.current.value = "";
       }
-      setFiles([]);
-      if (inputRef.current) inputRef.current.value = "";
     } catch {
       setMessageKind("err");
       setMessage("Erreur réseau.");
     } finally {
+      setUploadBatch(null);
       setBusy(false);
     }
   };
@@ -110,8 +165,9 @@ export default function AdminUploadForm({ kind }) {
     <div className="admin-upload">
       <h1 className="admin-upload__title">Upload {meta.title}</h1>
       <p className="admin-upload__subtitle">
-        JPEG, PNG, GIF ou Webp — max. 12&nbsp;Mo par fichier, jusqu’à 40 fichiers
-        d’un coup. Fichiers sur <strong>Vercel Blob</strong>, métadonnées dans{" "}
+        JPEG, PNG, GIF ou Webp — max. 12&nbsp;Mo par fichier, jusqu’à 40 fichiers.
+        Envoi automatique par petits lots pour éviter les timeouts. Fichiers sur{" "}
+        <strong>Vercel Blob</strong>, métadonnées dans{" "}
         <strong>Neon</strong> pour la galerie « {kind === "draw" ? "dessins" : "logos"} ».
         Store <strong>privé</strong> (défaut) : URL interne{" "}
         <code>/api/blob-file/…</code>. Store public Vercel : ajoute{" "}
@@ -173,7 +229,9 @@ export default function AdminUploadForm({ kind }) {
           disabled={busy || count === 0}
         >
           {busy
-            ? "Envoi en cours…"
+            ? uploadBatch
+              ? `Envoi lot ${uploadBatch.current}/${uploadBatch.total}…`
+              : "Envoi en cours…"
             : count <= 1
               ? `Publier ce ${meta.noun}`
               : `Publier ${count} images`}
