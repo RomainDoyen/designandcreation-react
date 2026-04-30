@@ -11,10 +11,10 @@ export default function AdminHomePage() {
     <>
       <h1 className="admin-dash__title">Tableau de bord</h1>
       <p className="admin-dash__lead">
-        Gère les visuels du portfolio : chaque upload va sur{" "}
+        Gère les visuels du portfolio : les fichiers vont sur{" "}
         <strong>Vercel Blob</strong> et l’URL est stockée dans{" "}
-        <strong>Neon</strong>. Les pages /draw et /logo se mettent à jour
-        automatiquement.
+        <strong>Neon</strong> (upload simple ou multiple). Les pages /draw et /logo
+        se mettent à jour automatiquement.
       </p>
 
       <div className="admin-dash__grid">
