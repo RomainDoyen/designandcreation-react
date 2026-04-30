@@ -2,6 +2,13 @@
 const nextConfig = {
   sassOptions: {
     includePaths: ["./src/styles"],
+    // Réduit le bruit en CI tant que la migration @use / sass:color n’est pas faite
+    silenceDeprecations: [
+      "import",
+      "global-builtin",
+      "color-functions",
+      "legacy-js-api",
+    ],
   },
   async redirects() {
     return [

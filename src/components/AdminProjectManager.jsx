@@ -1,6 +1,48 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+
+function ImagePreviewLightbox({ src, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="admin-img-preview"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Aperçu image"
+      onClick={onClose}
+    >
+      <div
+        className="admin-img-preview__inner"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="admin-img-preview__close"
+          onClick={onClose}
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+        <img src={src} alt="" className="admin-img-preview__img" />
+      </div>
+    </div>,
+    document.body,
+  );
+}
 
 function formatDate(iso) {
   try {
@@ -19,6 +61,9 @@ function KindSection({ kind, title }) {
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
   const [message, setMessage] = useState("");
+  const [previewSrc, setPreviewSrc] = useState(null);
+
+  const closePreview = useCallback(() => setPreviewSrc(null), []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -116,6 +161,9 @@ function KindSection({ kind, title }) {
 
   return (
     <section className="admin-manage-section" aria-labelledby={`manage-${kind}`}>
+      {previewSrc ? (
+        <ImagePreviewLightbox src={previewSrc} onClose={closePreview} />
+      ) : null}
       <h2 id={`manage-${kind}`} className="admin-manage-section__title">
         {title}
         {!loading ? (
@@ -129,83 +177,113 @@ function KindSection({ kind, title }) {
       ) : items.length === 0 ? (
         <p className="admin-manage__muted">Aucun élément pour l’instant.</p>
       ) : (
-        <ul className="admin-manage-grid">
-          {items.map((item) => (
-            <li key={item.id} className="admin-manage-card">
-              <div className="admin-manage-card__thumb">
-                <img src={item.imageUrl} alt="" loading="lazy" />
-              </div>
-              <div className="admin-manage-card__meta">
-                <span className="admin-manage-card__id" title={item.id}>
-                  {item.id.slice(0, 8)}…
-                </span>
-                <span className="admin-manage-card__date">
-                  {formatDate(item.createdAt)}
-                </span>
-              </div>
-              <div className="admin-manage-card__row">
-                <label className="admin-manage-label" htmlFor={`order-${item.id}`}>
+        <div className="admin-manage-table-wrap">
+          <table className="admin-manage-table">
+            <thead>
+              <tr>
+                <th scope="col" className="admin-manage-table__th admin-manage-table__th--thumb">
+                  Aperçu
+                </th>
+                <th scope="col" className="admin-manage-table__th">
+                  ID
+                </th>
+                <th scope="col" className="admin-manage-table__th">
+                  Création
+                </th>
+                <th scope="col" className="admin-manage-table__th">
                   Ordre
-                </label>
-                <div className="admin-manage-order">
-                  <input
-                    key={`${item.id}-${item.sortOrder}`}
-                    id={`order-${item.id}`}
-                    type="number"
-                    className="admin-manage-input"
-                    defaultValue={item.sortOrder}
-                    disabled={busyId === item.id}
-                    onBlur={(e) => {
-                      const v = parseInt(e.target.value, 10);
-                      if (Number.isNaN(v) || v === item.sortOrder) return;
-                      patchOrder(item.id, v);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="admin-manage-btn admin-manage-btn--ghost"
-                    disabled={busyId === item.id}
-                    onClick={() => {
-                      const el = document.getElementById(`order-${item.id}`);
-                      const v = parseInt(el?.value, 10);
-                      if (Number.isNaN(v)) return;
-                      patchOrder(item.id, v);
-                    }}
-                  >
-                    Appliquer
-                  </button>
-                </div>
-              </div>
-              <div className="admin-manage-card__row">
-                <label className="admin-manage-label" htmlFor={`file-${item.id}`}>
-                  Remplacer l’image
-                </label>
-                <input
-                  id={`file-${item.id}`}
-                  type="file"
-                  accept="image/jpeg,image/png,image/gif,image/webp"
-                  className="admin-manage-file"
-                  disabled={busyId === item.id}
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    e.target.value = "";
-                    if (f) replaceImage(item.id, f);
-                  }}
-                />
-              </div>
-              <div className="admin-manage-card__actions">
-                <button
-                  type="button"
-                  className="admin-manage-btn admin-manage-btn--danger"
-                  disabled={busyId === item.id}
-                  onClick={() => remove(item.id)}
-                >
-                  Supprimer
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+                </th>
+                <th scope="col" className="admin-manage-table__th admin-manage-table__th--file">
+                  Remplacer
+                </th>
+                <th scope="col" className="admin-manage-table__th admin-manage-table__th--actions">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id} className="admin-manage-table__row">
+                  <td className="admin-manage-table__td admin-manage-table__td--thumb">
+                    <button
+                      type="button"
+                      className="admin-manage-table__thumb-btn"
+                      onClick={() => setPreviewSrc(item.imageUrl)}
+                      aria-label="Afficher l’image en grand"
+                      title="Cliquer pour agrandir"
+                    >
+                      <span className="admin-manage-table__thumb">
+                        <img src={item.imageUrl} alt="" loading="lazy" />
+                      </span>
+                    </button>
+                  </td>
+                  <td className="admin-manage-table__td">
+                    <code className="admin-manage-table__id" title={item.id}>
+                      {item.id.slice(0, 8)}…
+                    </code>
+                  </td>
+                  <td className="admin-manage-table__td admin-manage-table__td--date">
+                    {formatDate(item.createdAt)}
+                  </td>
+                  <td className="admin-manage-table__td">
+                    <div className="admin-manage-order">
+                      <input
+                        key={`${item.id}-${item.sortOrder}`}
+                        id={`order-${item.id}`}
+                        type="number"
+                        className="admin-manage-input"
+                        defaultValue={item.sortOrder}
+                        disabled={busyId === item.id}
+                        onBlur={(e) => {
+                          const v = parseInt(e.target.value, 10);
+                          if (Number.isNaN(v) || v === item.sortOrder) return;
+                          patchOrder(item.id, v);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="admin-manage-btn admin-manage-btn--ghost"
+                        disabled={busyId === item.id}
+                        onClick={() => {
+                          const el = document.getElementById(`order-${item.id}`);
+                          const v = parseInt(el?.value, 10);
+                          if (Number.isNaN(v)) return;
+                          patchOrder(item.id, v);
+                        }}
+                      >
+                        Appliquer
+                      </button>
+                    </div>
+                  </td>
+                  <td className="admin-manage-table__td">
+                    <input
+                      id={`file-${item.id}`}
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif,image/webp"
+                      className="admin-manage-file"
+                      disabled={busyId === item.id}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        e.target.value = "";
+                        if (f) replaceImage(item.id, f);
+                      }}
+                    />
+                  </td>
+                  <td className="admin-manage-table__td admin-manage-table__td--actions">
+                    <button
+                      type="button"
+                      className="admin-manage-btn admin-manage-btn--danger"
+                      disabled={busyId === item.id}
+                      onClick={() => remove(item.id)}
+                    >
+                      Supprimer
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );
@@ -217,10 +295,10 @@ export default function AdminProjectManager() {
       <div className="admin-manage__intro">
         <h2 className="admin-manage__heading">Gérer la galerie</h2>
         <p className="admin-manage__lead">
-          Modifie l’<strong>ordre d’affichage</strong> (nombre puis « Appliquer » ou
-          clic hors champ), <strong>remplace</strong> une image (fichier), ou{" "}
-          <strong>supprime</strong> une entrée. Les pages publiques se mettent à
-          jour après chaque action.
+          Tableau par type (dessins / logos) : <strong>ordre</strong> (nombre puis
+          « Appliquer » ou clic hors champ), <strong>remplacement</strong> d’image
+          (colonne fichier), ou <strong>suppression</strong>. Défile horizontalement
+          sur mobile si besoin.
         </p>
       </div>
       <KindSection kind="draw" title="Dessins" />
